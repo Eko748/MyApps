@@ -39,7 +39,7 @@ func SetupRoutes(c *ControllerConfig) http.Handler {
 
 	// Wrap with CORS middleware
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   []string{"http://localhost:3000", "https://ecommerce-web-3zi5dnvew-eko-permanas-projects.vercel.app"}, // Add Vercel domain here
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
