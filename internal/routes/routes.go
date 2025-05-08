@@ -2,11 +2,11 @@
 package routes
 
 import (
-	"github.com/rs/cors"
-	"net/http"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"myapps/internal/auth"
 	"myapps/internal/controller"
+	"net/http"
 )
 
 type ControllerConfig struct {
@@ -39,7 +39,11 @@ func SetupRoutes(c *ControllerConfig) http.Handler {
 
 	// Wrap with CORS middleware
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "https://ecommerce-web-3zi5dnvew-eko-permanas-projects.vercel.app", "https://ecommerce-web-app-git-main-eko-permanas-projects.vercel.app?_vercel_share=USkS1LLG0cItHUXDkw8gO25GNdYgn8bG"}, // Add Vercel domain here
+		AllowedOrigins: []string{
+			"http://localhost:3000", 
+			"https://ecommerce-web-3zi5dnvew-eko-permanas-projects.vercel.app",
+			"https://ecommerce-web-app-git-main-eko-permanas-projects.vercel.app",
+			},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
