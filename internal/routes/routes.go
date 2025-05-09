@@ -44,6 +44,7 @@ func SetupRoutes(c *ControllerConfig) http.Handler {
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins: []string{
 			"http://localhost:3000", 
+			"https://ecommerce-web-661cmm749-eko-permanas-projects.vercel.app",
 			"https://ecommerce-web-3zi5dnvew-eko-permanas-projects.vercel.app",
 			"https://ecommerce-web-app-git-main-eko-permanas-projects.vercel.app",
 		},
