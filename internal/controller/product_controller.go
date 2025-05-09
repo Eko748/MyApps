@@ -23,22 +23,35 @@ func NewProductController(s service.ProductService) *ProductController {
 // GetProducts retrieves products with pagination
 func (c *ProductController) GetProducts(w http.ResponseWriter, r *http.Request) {
     p := helper.Paginate(r)
+    search := r.URL.Query().Get("keyword")
 
-    total, err := c.Service.Count()
-    if err != nil {
-        response.JSON(w, http.StatusInternalServerError, "Failed to count products", nil, nil)
-        return
-    }
+    var (
+        products []model.Product
+        total    int
+        err      error
+    )
 
-    products, err := c.Service.GetPaginated(p.PerPage, p.Offset)
-    if err != nil {
-        response.JSON(w, http.StatusInternalServerError, "Failed to fetch products", nil, nil)
-        return
+    if search != "" {
+        products, total, err = c.Service.GetPaginatedWithSearch(p.PerPage, p.Offset, search)
+        if err != nil {
+            response.JSON(w, http.StatusInternalServerError, "Failed to search products", nil, nil)
+            return
+        }
+    } else {
+        total, err = c.Service.Count()
+        if err != nil {
+            response.JSON(w, http.StatusInternalServerError, "Failed to count products", nil, nil)
+            return
+        }
+
+        products, err = c.Service.GetPaginated(p.PerPage, p.Offset)
+        if err != nil {
+            response.JSON(w, http.StatusInternalServerError, "Failed to fetch products", nil, nil)
+            return
+        }
     }
 
     pagination := response.NewPagination(total, p.PerPage, p.Page)
-
-    // Return products directly under "data" without additional nesting
     response.JSON(w, http.StatusOK, "Success", products, pagination)
 }
 

@@ -13,6 +13,7 @@ type ProductRepository interface {
 	FindAll() ([]model.Product, error)
 	Count() (int, error)
 	FindPaginated(limit, offset int) ([]model.Product, error)
+	FindPaginatedWithSearch(limit, offset int, search string) ([]model.Product, int, error)
 	FindByID(id string) (model.Product, error)
 	FindByCategory(categoryID string) ([]model.Product, error)
 	FindByName(name string) ([]model.Product, error)
@@ -71,6 +72,40 @@ func (r *productRepo) FindPaginated(limit, offset int) ([]model.Product, error) 
 	defer rows.Close()
 
 	return helper.ProductRows(rows)
+}
+
+// FindPaginatedWithSearch retrieves paginated products with optional search
+func (r *productRepo) FindPaginatedWithSearch(limit, offset int, search string) ([]model.Product, int, error) {
+	searchPattern := "%" + search + "%"
+
+	countQuery := `SELECT COUNT(*) FROM products WHERE deleted_at IS NULL AND LOWER(name) LIKE LOWER($1)`
+	countRow := r.db.QueryRow(countQuery, searchPattern)
+
+	var total int
+	err := countRow.Scan(&total)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	query := `
+		SELECT id, name, description, price, stock, main_category_id, created_at, created_by, updated_at, updated_by, deleted_at, deleted_by
+		FROM products
+		WHERE deleted_at IS NULL AND LOWER(name) LIKE LOWER($3)
+		ORDER BY created_at DESC
+		LIMIT $1 OFFSET $2`
+
+	rows, err := r.db.Query(query, limit, offset, searchPattern)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	products, err := helper.ProductRows(rows)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return products, total, nil
 }
 
 // FindByID retrieves a product by ID
@@ -181,7 +216,6 @@ func (r *productRepo) GroupByCategory() (map[string][]model.Product, error) {
 	return grouped, nil
 }
 
-
 // package repository
 
 // import (
@@ -256,7 +290,6 @@ func (r *productRepo) GroupByCategory() (map[string][]model.Product, error) {
 
 //     return helper.ProductRows(rows)
 // }
-
 
 // // FindByID retrieves a product by ID
 // func (r *productRepo) FindByID(id string) (model.Product, error) {

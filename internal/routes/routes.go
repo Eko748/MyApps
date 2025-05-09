@@ -1,4 +1,3 @@
-// routes/routes.go
 package routes
 
 import (
@@ -10,7 +9,8 @@ import (
 )
 
 type ControllerConfig struct {
-	ProductController *controller.ProductController
+	ProductController      *controller.ProductController
+	OpenSourceController   *controller.OpenSourceController
 }
 
 func SetupRoutes(c *ControllerConfig) http.Handler {
@@ -37,13 +37,16 @@ func SetupRoutes(c *ControllerConfig) http.Handler {
 	route(api, "GET", "/products/group/category", c.ProductController.GroupProductsByCategory)
 	route(api, "GET", "/products/price-range", c.ProductController.FindProductsByPriceRange)
 
+	// Open Source routes
+	route(api, "GET", "/wikipedia/suggestions", c.OpenSourceController.GetWikipediaSuggestion)
+
 	// Wrap with CORS middleware
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins: []string{
 			"http://localhost:3000", 
 			"https://ecommerce-web-3zi5dnvew-eko-permanas-projects.vercel.app",
 			"https://ecommerce-web-app-git-main-eko-permanas-projects.vercel.app",
-			},
+		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,

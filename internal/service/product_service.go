@@ -10,6 +10,7 @@ type ProductService interface {
 	GetAll() ([]model.Product, error)
 	Count() (int, error)
 	GetPaginated(limit, offset int) ([]model.Product, error)
+	GetPaginatedWithSearch(limit, offset int, search string) ([]model.Product, int, error)
 	GetByCategory(string) ([]model.Product, error)
 	GetByID(string) (model.Product, error)
 	Create(model.Product) error
@@ -38,6 +39,10 @@ func (s *productService) Count() (int, error) {
 
 func (s *productService) GetPaginated(limit, offset int) ([]model.Product, error) {
     return s.repo.FindPaginated(limit, offset)
+}
+
+func (s *productService) GetPaginatedWithSearch(limit, offset int, search string) ([]model.Product, int, error) {
+	return s.repo.FindPaginatedWithSearch(limit, offset, search)
 }
 
 func (s *productService) GetByCategory(categoryID string) ([]model.Product, error) {
